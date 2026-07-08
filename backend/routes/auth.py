@@ -85,3 +85,29 @@ def debug_users():
         }), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@auth_bp.route("/debug/db-info", methods=["GET"])
+def debug_db_info():
+    """Debug endpoint to check database connection and tables"""
+    try:
+        from database import db
+        from sqlalchemy import inspect
+        
+        inspector = inspect(db.engine)
+        tables = inspector.get_table_names()
+        
+        user_count = User.query.count()
+        
+        return jsonify({
+            "database_uri": str(db.engine.url),
+            "tables": tables,
+            "user_count": user_count,
+            "tables_info": {
+                table: {
+                    "columns": [col["name"] for col in inspector.get_columns(table)]
+                } for table in tables
+            }
+        }), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
