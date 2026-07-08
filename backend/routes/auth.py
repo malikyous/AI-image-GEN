@@ -46,23 +46,42 @@ def register():
 
 @auth_bp.route("/login", methods=["POST"])
 def login():
-    data = request.get_json()
+    try:
+        data = request.get_json()
 
-    email = data.get("email", "").strip()
-    password = data.get("password", "")
+        email = data.get("email", "").strip()
+        password = data.get("password", "")
 
-    if not email or not password:
-        return jsonify({"error": "Email and password are required"}), 400
+        if not email or not password:
+            return jsonify({"error": "Email and password are required"}), 400
 
-    user = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=email).first()
 
-    if not user or not user.check_password(password):
-        return jsonify({"error": "Invalid email or password"}), 401
+        if not user:
+            return jsonify({"error": "User not found with this email"}), 401
 
-    access_token = create_access_token(identity=str(user.id))
+        if not user.check_password(password):
+            return jsonify({"error": "Invalid password"}), 401
 
-    return jsonify({
-        "message": "Login successful",
-        "user": user.to_dict(),
-        "access_token": access_token,
-    }), 200
+        access_token = create_access_token(identity=str(user.id))
+
+        return jsonify({
+            "message": "Login successful",
+            "user": user.to_dict(),
+            "access_token": access_token,
+        }), 200
+    except Exception as e:
+        return jsonify({"error": f"Login failed: {str(e)}"}), 500
+
+
+@auth_bp.route("/debug/users", methods=["GET"])
+def debug_users():
+    """Debug endpoint to list all users in database"""
+    try:
+        users = User.query.all()
+        return jsonify({
+            "total_users": len(users),
+            "users": [{"id": u.id, "username": u.username, "email": u.email, "created_at": u.created_at.isoformat()} for u in users]
+        }), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

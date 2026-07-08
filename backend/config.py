@@ -9,7 +9,8 @@ class Config:
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "jwt-dev-secret-key")
 
     # SQLite database (no MySQL required)
-    SQLALCHEMY_DATABASE_URI = "sqlite:///ai_image_generator.db"
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(basedir, 'instance', 'ai_image_generator.db')}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")

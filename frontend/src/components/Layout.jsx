@@ -1,14 +1,17 @@
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { useNavigate } from 'react-router-dom';
 import './Layout.css';
 
 export default function Layout({ children, activeTab, onTabChange }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { addToast } = useToast();
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    addToast('Logged out successfully', 'success');
+    navigate('/');
   };
 
   return (

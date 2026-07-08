@@ -9,8 +9,12 @@ from models import User, ImageHistory
 
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(Config)
+    
+    # Ensure instance folder exists
+    import os
+    os.makedirs(app.instance_path, exist_ok=True)
     
     CORS(app, origins=["http://localhost:5173", "http://localhost:3000"])
     db.init_app(app)

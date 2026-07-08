@@ -1,0 +1,77 @@
+.generator {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.generator-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.generator-header h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.generator-header p {
+  color: var(--text-secondary);
+}
+
+.generator-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.generator-form textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.generate-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 2rem;
+  font-size: 1rem;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-secondary);
+}
+
+.loading-animation {
+  margin-bottom: 1rem;
+}
+
+.result {
+  margin-top: 2rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.result img {
+  width: 100%;
+  display: block;
+}
+
+.result-info {
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.result-prompt {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  flex: 1;
+}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { authAPI } from '../api';
 import './Auth.css';
 
@@ -12,6 +13,7 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { addToast } = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,9 +23,11 @@ export default function Register() {
     try {
       const { data } = await authAPI.register({ username, email, password });
       login(data.user, data.access_token);
-      navigate('/');
+      addToast('Account created successfully!', 'success');
+      navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.error || 'Registration failed');
+      addToast(err.response?.data?.error || 'Registration failed', 'error');
     } finally {
       setLoading(false);
     }

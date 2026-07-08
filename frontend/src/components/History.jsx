@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { imageAPI } from '../api';
+import { useToast } from '../context/ToastContext';
 import './History.css';
 
 export default function History({ refreshKey }) {
@@ -8,6 +9,7 @@ export default function History({ refreshKey }) {
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const { addToast } = useToast();
 
   const fetchHistory = useCallback(async () => {
     setLoading(true);
@@ -18,10 +20,11 @@ export default function History({ refreshKey }) {
       setTotalPages(data.pages);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to load history');
+      addToast(err.response?.data?.error || 'Failed to load history', 'error');
     } finally {
       setLoading(false);
     }
-  }, [page]);
+  }, [page, addToast]);
 
   useEffect(() => {
     fetchHistory();
@@ -33,8 +36,9 @@ export default function History({ refreshKey }) {
     try {
       await imageAPI.deleteImage(id);
       setImages((prev) => prev.filter((img) => img.id !== id));
+      addToast('Image deleted successfully', 'success');
     } catch (err) {
-      alert(err.response?.data?.error || 'Failed to delete');
+      addToast(err.response?.data?.error || 'Failed to delete', 'error');
     }
   };
 
