@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://ai-image-gen-g9cc.vercel.app/api',
+  baseURL: 'https://ai-image-gen-523n.vercel.app/api',
   headers: { 'Content-Type': 'application/json' },
 });
 
