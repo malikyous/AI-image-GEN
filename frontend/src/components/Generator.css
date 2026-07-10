@@ -146,3 +146,26 @@
   flex: 1;
   min-width: 120px;
 }
+
+@media (max-width: 768px) {
+  .generator {
+    padding: 0 1rem;
+  }
+
+  .generator-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .suggestions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .result-actions {
+    flex-direction: column;
+  }
+
+  .result-actions button,
+  .result-actions a {
+    width: 100%;
+  }
+}

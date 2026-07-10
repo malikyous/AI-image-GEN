@@ -69,6 +69,7 @@
   margin-bottom: 0.5rem;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -100,4 +101,31 @@
   margin-top: 2rem;
   color: var(--text-secondary);
   font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .history {
+    padding: 0 1rem;
+  }
+
+  .history-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .history-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .history-card img {
+    height: 250px;
+  }
+
+  .history-actions {
+    flex-direction: column;
+  }
+
+  .history-actions .btn-secondary,
+  .history-actions .btn-danger {
+    width: 100%;
+  }
 }
