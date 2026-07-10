@@ -16,8 +16,9 @@ app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'jwt-dev-secret-key-c
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 jwt = JWTManager(app)
 
-# In-memory user storage (not persistent across deployments)
+# In-memory storage (not persistent across deployments)
 users_db = {}
+images_db = {}  # Store images by user_id
 
 @app.route("/")
 def index():
@@ -114,9 +115,11 @@ def login():
 
 # Image generation endpoint
 @app.route("/api/images/generate", methods=["POST"])
+@jwt_required()
 def generate_image():
     data = request.get_json()
     prompt = data.get("prompt", "").strip()
+    user_id = get_jwt_identity()
     
     if not prompt:
         return jsonify({"error": "Prompt is required"}), 400
@@ -150,28 +153,57 @@ def generate_image():
         # Encode to base64
         base64_image = base64.b64encode(img_byte_arr).decode('utf-8')
         image_url = f"data:image/jpeg;base64,{base64_image}"
+        
+        # Save to in-memory storage
+        if user_id not in images_db:
+            images_db[user_id] = []
+        
+        image_id = str(uuid.uuid4())
+        images_db[user_id].append({
+            "id": image_id,
+            "prompt": prompt,
+            "image_url": image_url,
+            "created_at": str(datetime.datetime.now())
+        })
             
     except Exception as e:
         return jsonify({"error": f"Image generation failed: {str(e)}"}), 500
 
     return jsonify({
         "message": "Image generated successfully",
-        "image": {"prompt": prompt, "image_url": image_url},
+        "image": {"prompt": prompt, "image_url": image_url, "id": image_id},
     }), 200
 
 # History endpoints (in-memory, not persistent)
 @app.route("/api/images/history", methods=["GET"])
 @jwt_required()
 def get_history():
+    user_id = get_jwt_identity()
+    page = request.args.get('page', 1, type=int)
+    per_page = 10
+    
+    user_images = images_db.get(user_id, [])
+    
+    # Pagination
+    start = (page - 1) * per_page
+    end = start + per_page
+    paginated_images = user_images[start:end]
+    
     return jsonify({
-        "images": [],
-        "pages": 1,
-        "current_page": 1
+        "images": paginated_images,
+        "pages": (len(user_images) + per_page - 1) // per_page,
+        "current_page": page,
+        "total": len(user_images)
     }), 200
 
 @app.route("/api/images/history/<image_id>", methods=["DELETE"])
 @jwt_required()
 def delete_image(image_id):
+    user_id = get_jwt_identity()
+    
+    if user_id in images_db:
+        images_db[user_id] = [img for img in images_db[user_id] if img["id"] != image_id]
+    
     return jsonify({"message": "Image deleted successfully"}), 200
 
 import datetime
